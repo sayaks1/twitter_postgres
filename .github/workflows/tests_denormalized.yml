@@ -12,14 +12,17 @@ jobs:
     - name: setup python
       run: |
         pip3 install -r requirements.txt
-    - name: docker
+    - name: Init submodules and start Docker containers
       run: |
         git submodule init
         git submodule update
         docker compose down -v
         docker compose up -d --build
         docker ps -a
-        sleep 20
+
+    - name: Wait for container DNS resolution
+      run: |
+        echo "Waiting for pg_normalized and pg_denormalized to resolve..."
         for i in {1..10}; do
           if getent hosts pg_normalized && getent hosts pg_denormalized; then
             echo "Hostnames resolved"
@@ -28,5 +31,22 @@ jobs:
           echo "Retrying..."
           sleep 2
         done
+
+    - name: Check Docker networking
+      run: |
+        docker network ls
+        docker network inspect $(docker network ls -q -f name=*_default)
+
+    - name: Debug networking between containers
+      run: |
+        docker compose exec pg_denormalized getent hosts pg_normalized
+        docker compose exec pg_normalized getent hosts pg_denormalized
+        docker compose exec pg_denormalized ping -c 4 pg_normalized || true
+
+    - name: Run load_tweets.sh
+      run: |
         sh load_tweets.sh
+
+    - name: Run tests inside pg_denormalized
+      run: |
         docker compose exec -e CI=true -T pg_denormalized ./run_tests.sh
