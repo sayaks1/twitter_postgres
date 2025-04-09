@@ -17,6 +17,8 @@ jobs:
         git submodule init
         git submodule update
         docker compose down -v
+        docker volume ls -q --filter name=pg_normalized | xargs -r docker volume rm
+        docker volume ls -q --filter name=pg_denormalized | xargs -r docker volume rm
         docker compose up -d --build
         docker ps -a
 
