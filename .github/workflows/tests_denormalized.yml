@@ -35,7 +35,7 @@ jobs:
     - name: Check Docker networking
       run: |
         docker network ls
-        docker network inspect $(docker network ls -q -f name=*_default)
+        docker network inspect twitter_postgres_default 
 
     - name: Debug networking between containers
       run: |
@@ -43,10 +43,14 @@ jobs:
         docker compose exec pg_normalized getent hosts pg_denormalized
         docker compose exec pg_denormalized ping -c 4 pg_normalized || true
 
+    - name: Ensure scripts are executable
+      run: |
+        chmod +x load_tweets.sh run_tests.sh
+        docker compose exec pg_normalized ls -la /tmp/db
     - name: Run load_tweets.sh
       run: |
-        sh load_tweets.sh
+        docker compose exec -T pg_normalized bash -c "sh /tmp/db/load_tweets.sh"
 
     - name: Run tests inside pg_denormalized
       run: |
-        docker compose exec -e CI=true -T pg_denormalized ./run_tests.sh
+        docker compose exec -e CI=true -T pg_denormalized bash -c "sh /tmp/db/run_tests.sh"
