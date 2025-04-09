@@ -4,7 +4,7 @@ services:
   pg_denormalized:
     build: services/pg_denormalized
     volumes:
-      - .:/mnt/db
+      - ./:/tmp/db 
       - pg_denormalized:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
@@ -17,7 +17,7 @@ services:
   pg_normalized:
     build: services/pg_normalized
     volumes:
-      - .:/mnt/db
+      - ./:/tmp/db 
       - pg_normalized:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
