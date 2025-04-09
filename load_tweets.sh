@@ -6,7 +6,7 @@ if [ -n "$CI" ]; then
   NORMALIZED_DB="postgresql://postgres:pass@localhost:1048/postgres"
   DENORMALIZED_HOST="localhost"
   DENORMALIZED_PORT="1047"
-  DENORMALIZED_DB="postgres"
+  DENORMALIZED_DB="pg_denormalized"
 else
   # Local environment settings
   NORMALIZED_DB="postgresql://postgres:pass@localhost:1048/pg_normalized"
