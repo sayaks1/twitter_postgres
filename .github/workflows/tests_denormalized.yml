@@ -20,5 +20,13 @@ jobs:
         docker compose up -d --build
         docker ps -a
         sleep 20
+        for i in {1..10}; do
+          if getent hosts pg_normalized && getent hosts pg_denormalized; then
+            echo "Hostnames resolved"
+            break
+          fi
+          echo "Retrying..."
+          sleep 2
+        done
         sh load_tweets.sh
         docker compose exec -e CI=true -T pg_denormalized ./run_tests.sh
