@@ -1,9 +1,13 @@
 FROM postgis/postgis
+FROM postgres:14
+
 
 RUN apt-get update && apt-get install -y \
     less \
     make \
-    vim
+    vim  \
+    postgresql-client \
+    bash
 
 WORKDIR /tmp/db
 
