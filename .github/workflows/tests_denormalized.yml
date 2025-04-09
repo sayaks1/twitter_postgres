@@ -53,11 +53,19 @@ jobs:
       run: |
         docker compose exec -T pg_denormalized psql -U postgres -d postgres -f /tmp/db/services/pg_denormalized/schema.sql
 
+    - name: Debug setup
+      run: |
+        ls -la  # Check what files are in the current directory
+        ls -la test-data.zip  # Verify the test data exists
     - name: Run load_tweets.sh
       run: |
         sh load_tweets.sh
       env:
         CI: "true"
+    - name: Debug database status after load
+      run: |
+        docker compose exec -T pg_normalized psql -U postgres -d postgres -c "SELECT count(*) FROM tweets;"
+        docker compose exec -T pg_denormalized psql -U postgres -d postgres -c "SELECT count(*) FROM tweets_jsonb;"
     - name: Run tests inside pg_denormalized
       run: |
         docker compose exec -e CI=true -T pg_denormalized bash -c "sh /tmp/db/run_tests.sh"
