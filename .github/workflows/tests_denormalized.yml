@@ -37,7 +37,7 @@ jobs:
         CI: "true"
     - name: Debug database status after load
       run: |
-      PGPASSWORD=pass psql -h localhost -p 1048 -U postgres -d pg_normalized -c "SELECT count(*) FROM tweets;"
+        PGPASSWORD=pass psql -h localhost -p 1048 -U postgres -d pg_normalized -c "SELECT count(*) FROM tweets;"
         PGPASSWORD=pass psql -h localhost -p 1048 -U postgres -d pg_normalized -c "SELECT count(*) FROM tweet_tags;"
         PGPASSWORD=pass psql -h localhost -p 1047 -U postgres -d pg_denormalized -c "SELECT count(*) FROM tweets_jsonb;"
         PGPASSWORD=pass psql -h localhost -p 1047 -U postgres -d pg_denormalized -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
