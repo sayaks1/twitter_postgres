@@ -20,5 +20,4 @@ jobs:
         docker ps -a
         sleep 20
         sh load_tweets.sh
-        docker compose exec -T pg_denormalized pg_isready -h localhost -p 5432 -U postgres
-        docker compose exec -T pg_denormalized ./run_tests.sh
+        docker compose exec -e CI=true -T pg_denormalized ./run_tests.sh
