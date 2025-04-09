@@ -415,7 +415,7 @@ if __name__ == '__main__':
     # create database connection
     engine = sqlalchemy.create_engine(args.db, connect_args={
         'application_name': 'load_tweets.py',
-        })
+        }, isolation_level="AUTOCOMMIT")
     connection = engine.connect()
 
     # loop through the input file
