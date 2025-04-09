@@ -8,14 +8,15 @@ if [ -z "$CI" ]; then
   # Local environment
   HOST=localhost
   PORT=1048
+  DB=pg_normalized
 else
   # GitHub Actions / Docker environment
   HOST=localhost
   PORT=5432
+  DB=postgres
 fi
 
 USER=postgres
-DB=pg_normalized
 PASSWORD=pass
 export PGPASSWORD=$PASSWORD
 
