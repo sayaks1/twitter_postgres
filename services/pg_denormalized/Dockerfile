@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /tmp/db
 
 RUN mkdir /data && chown postgres /data
+ENV POSTGRES_DB=pg_denormalized
 
 # copy over the pagila database;
 # we rename the files so that they get executed in the correct order
