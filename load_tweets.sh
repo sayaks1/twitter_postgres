@@ -3,7 +3,7 @@
 # Check if running in CI environment
 if [ -n "$CI" ]; then
   # CI environment settings
-  NORMALIZED_DB="postgresql://postgres:pass@localhost:1048/postgres"
+  NORMALIZED_DB="postgresql://postgres:pass@localhost:1048/pg_normalized"
   DENORMALIZED_HOST="localhost"
   DENORMALIZED_PORT="1047"
   DENORMALIZED_DB="pg_denormalized"
