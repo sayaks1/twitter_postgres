@@ -13,7 +13,7 @@ else
   # GitHub Actions / Docker environment
   HOST=pg_normalized
   PORT=5432
-  DB=postgres
+  DB=pg_normalized
 fi
 
 USER=postgres

@@ -22,21 +22,13 @@ jobs:
         docker compose up -d --build
         docker ps -a
 
-    - name: Wait for container DNS resolution
+    - name: Wait for container DNS resolution and database initialization
       run: |
-        echo "Waiting for pg_normalized and pg_denormalized to resolve and initialize..."
-        for i in {1..15}; do
-          if getent hosts pg_normalized && getent hosts pg_denormalized; then
-            echo "Hostnames resolved"
-            # Check if databases are ready
-            if docker compose exec -T pg_normalized pg_isready -U postgres && docker compose exec -T pg_denormalized pg_isready -U postgres; then
-              echo "Databases ready"
-              break
-            fi
-          fi
-          echo "Retrying..."
-          sleep 3
-        done
+        echo "Waiting for databases to initialize (30 seconds)..."
+        sleep 30
+        echo "Checking if databases are ready..."
+        docker compose exec -T pg_normalized pg_isready -U postgres
+        docker compose exec -T pg_denormalized pg_isready -U postgres
 
     - name: Run load_tweets.sh
       run: |
@@ -46,7 +38,10 @@ jobs:
     - name: Debug database status after load
       run: |
         docker compose exec -T pg_normalized psql -U postgres -d pg_normalized -c "SELECT count(*) FROM tweets;"
+        docker compose exec -T pg_normalized psql -U postgres -d pg_normalized -c "SELECT count(*) FROM tweet_tags;"
         docker compose exec -T pg_denormalized psql -U postgres -d pg_denormalized -c "SELECT count(*) FROM tweets_jsonb;"
+        docker compose exec -T pg_denormalized psql -U postgres -d pg_denormalized -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
+        docker compose exec -T pg_denormalized psql -U postgres -d pg_denormalized -c "SELECT table_name FROM information_schema.views WHERE table_schema = 'public';"
 
     - name: Run tests inside pg_denormalized
       run: |
