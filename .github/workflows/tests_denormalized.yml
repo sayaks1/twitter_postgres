@@ -60,8 +60,9 @@ jobs:
         CI: "true"
     - name: Debug database status after load
       run: |
-        docker compose exec -T pg_normalized psql -U postgres -d postgres -c "SELECT count(*) FROM tweets;"
-        docker compose exec -T pg_denormalized psql -U postgres -d postgres -c "SELECT count(*) FROM tweets_jsonb;"
+        docker compose exec -T pg_normalized psql -U postgres -d pg_normalized -c "SELECT count(*) FROM tweets;"
+        docker compose exec -T pg_denormalized psql -U postgres -d pg_denormalized -c "SELECT count(*) FROM tweets_jsonb;"
+
     - name: Run tests inside pg_denormalized
       run: |
         docker compose exec -e CI=true -T pg_denormalized bash -c "sh /tmp/db/run_tests.sh"
