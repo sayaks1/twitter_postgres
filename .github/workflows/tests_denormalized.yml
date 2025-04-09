@@ -22,37 +22,22 @@ jobs:
         docker compose up -d --build
         docker ps -a
 
-
     - name: Wait for container DNS resolution
       run: |
-        echo "Waiting for pg_normalized and pg_denormalized to resolve..."
-        for i in {1..10}; do
+        echo "Waiting for pg_normalized and pg_denormalized to resolve and initialize..."
+        for i in {1..15}; do
           if getent hosts pg_normalized && getent hosts pg_denormalized; then
             echo "Hostnames resolved"
-            break
+            # Check if databases are ready
+            if docker compose exec -T pg_normalized pg_isready -U postgres && docker compose exec -T pg_denormalized pg_isready -U postgres; then
+              echo "Databases ready"
+              break
+            fi
           fi
           echo "Retrying..."
-          sleep 2
+          sleep 3
         done
-    - name: Load pg_normalized schema
-      run: |
-        docker compose exec -T pg_normalized bash -c "psql -U postgres -d pg_normalized -f /tmp/db/services/pg_normalized/schema.sql" 
 
-    - name: Load pg_denormalized schema
-      run: |
-        docker compose exec -T pg_denormalized bash -c "psql -U postgres -d pg_denormalized -f /tmp/db/services/pg_denormalized/schema.sql" 
-
-    - name: Wait for container DNS resolution
-      run: |
-        echo "Waiting for pg_normalized and pg_denormalized to resolve..."
-        for i in {1..10}; do
-          if getent hosts pg_normalized && getent hosts pg_denormalized; then
-            echo "Hostnames resolved"
-            break
-          fi
-          echo "Retrying..."
-          sleep 2
-        done
     - name: Run load_tweets.sh
       run: |
         sh load_tweets.sh
