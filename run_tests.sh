@@ -11,8 +11,8 @@ if [ -z "$CI" ]; then
   DB=pg_normalized
 else
   # GitHub Actions / Docker environment
-  HOST=localhost
-  PORT=1048
+  HOST=pg_normalized
+  PORT=5432
   DB=pg_normalized
 fi
 
