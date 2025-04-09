@@ -12,12 +12,26 @@ jobs:
     - name: setup python
       run: |
         pip3 install -r requirements.txt
-    - name: docker
+    - name: Init submodules and start Docker containers
       run: |
         git submodule init
         git submodule update
+        docker compose down -v
         docker compose up -d --build
         docker ps -a
-        sleep 20
+    - name: Wait for container DNS resolution and database initialization
+      run: |
+        echo "Waiting for databases to initialize (30 seconds)..."
+        sleep 30
+        echo "Checking if databases are ready..."
+        docker compose exec -T pg_normalized pg_isready -U postgres
+        docker compose exec -T pg_denormalized pg_isready -U postgres
+    - name: Run load_tweets.sh
+      run: |
         sh load_tweets.sh
-        docker compose exec -T pg_normalized ./run_tests.sh 
+      env:
+        CI: "true"
+
+    - name: Run tests inside pg_normalized
+      run: |
+        docker compose exec -e CI=true -T pg_normalized bash -c "cd /tmp/db && sh run_tests.sh"
