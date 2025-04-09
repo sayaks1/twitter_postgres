@@ -32,31 +32,6 @@ jobs:
           sleep 2
         done
 
-    - name: Check Docker networking
-      run: |
-        docker network ls
-        docker network inspect twitter_postgres_default 
-
-    - name: Debug networking between containers
-      run: |
-        docker compose exec pg_denormalized getent hosts pg_normalized
-        docker compose exec pg_normalized getent hosts pg_denormalized
-
-    - name: Ensure scripts are executable
-      run: |
-        chmod +x load_tweets.sh run_tests.sh
-        docker compose exec pg_normalized ls -la /tmp/db
-    - name: Manually apply schema to pg_normalized
-      run: |
-        docker compose exec -T pg_normalized psql -U postgres -d postgres -f /tmp/db/services/pg_normalized/schema.sql
-    - name: Manually apply schema to pg_denormalized
-      run: |
-        docker compose exec -T pg_denormalized psql -U postgres -d postgres -f /tmp/db/services/pg_denormalized/schema.sql
-
-    - name: Debug setup
-      run: |
-        ls -la  # Check what files are in the current directory
-        ls -la test-data.zip  # Verify the test data exists
     - name: Run load_tweets.sh
       run: |
         sh load_tweets.sh
