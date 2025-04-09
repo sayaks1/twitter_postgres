@@ -197,6 +197,10 @@ def insert_tweet(connection,tweet):
                     geo_str = None
                     geo_coords = None
 
+        if geo_coords is None:
+            geo_wkt = None
+        else:
+            geo_wkt = f"{geo_str}({geo_coords})"
         try:
             text = tweet['extended_tweet']['full_text']
         except:
@@ -271,7 +275,7 @@ def insert_tweet(connection,tweet):
                 :state_code,
                 :place_name,
                 :geo_type,
-                :geo_coordinates
+                ST_GeomFromText(:geo_coordinates, 4326) 
             )
         ''')
         connection.execute(sql, {
@@ -291,7 +295,7 @@ def insert_tweet(connection,tweet):
             'state_code': state_code,
             'place_name': place_name,
             'geo_type': geo_str,
-            'geo_coordinates': geo_coords
+            'geo_coordinates': geo_wkt
         })
         ########################################
         # insert into the tweet_urls table

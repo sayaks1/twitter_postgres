@@ -16,8 +16,9 @@ done
 echo 'load denormalized'
 for file in $files; do
     # use SQL's COPY command to load data into pg_denormalized
+    export PGPASSWORD=pass
     unzip -p "$file" | sed 's/\\u0000//g' | psql \
         -h localhost -p 1047 -U postgres -d pg_denormalized \
-        -c "\copy tweets_json (doc) FROM STDIN WITH (FORMAT csv, DELIMITER E'\t', QUOTE E'\b')"
+        -c "\copy tweets_jsonb (data) FROM STDIN WITH (FORMAT csv, DELIMITER E'\t', QUOTE E'\b')"
 
 done

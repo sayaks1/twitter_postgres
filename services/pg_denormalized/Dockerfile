@@ -3,7 +3,9 @@ FROM postgres:13
 RUN apt-get update && apt-get install -y \
     less \
     make \
-    vim
+    vim  \
+    bash \
+    postgresql-client
 
 WORKDIR /tmp/db
 

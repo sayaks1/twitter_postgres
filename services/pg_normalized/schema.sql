@@ -29,7 +29,9 @@ CREATE TABLE users (
     name TEXT,
     location TEXT,
     description TEXT,
+    geo_enabled BOOLEAN,
     withheld_in_countries VARCHAR(2)[],
+    in_reply_to_userid BIGINT,
     FOREIGN KEY (id_urls) REFERENCES urls(id_urls)
 );
 
@@ -41,8 +43,9 @@ CREATE TABLE tweets (
     id_users BIGINT,
     created_at TIMESTAMPTZ,
     in_reply_to_status_id BIGINT,
-    in_reply_to_user_id BIGINT,
+    in_reply_to_userid BIGINT,
     quoted_status_id BIGINT,
+    is_quote_status BOOLEAN,
     retweet_count SMALLINT,
     favorite_count SMALLINT,
     quote_count SMALLINT,
@@ -54,9 +57,11 @@ CREATE TABLE tweets (
     state_code VARCHAR(2),
     lang TEXT,
     place_name TEXT,
+    geo_type TEXT,
+    geo_coordinates GEOMETRY,
     geo geometry,
     FOREIGN KEY (id_users) REFERENCES users(id_users),
-    FOREIGN KEY (in_reply_to_user_id) REFERENCES users(id_users)
+    FOREIGN KEY (in_reply_to_userid) REFERENCES users(id_users)
 
     -- NOTE:
     -- We do not have the following foreign keys because they would require us

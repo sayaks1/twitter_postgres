@@ -4,12 +4,27 @@ failed=false
 
 mkdir -p results
 
+if [ -z "$CI" ]; then
+  # Local environment
+  HOST=localhost
+  PORT=1048
+else
+  # GitHub Actions / Docker environment
+  HOST=localhost
+  PORT=5432
+fi
+
+USER=postgres
+DB=pg_normalized
+PASSWORD=pass
+export PGPASSWORD=$PASSWORD
+
 for problem in sql/*; do
     printf "$problem "
     problem_id=$(basename ${problem%.sql})
     result="results/$problem_id.out"
     expected="expected/$problem_id.out"
-    psql -U postgres -d pg_normalized < $problem > $result
+    psql -h $HOST -p $PORT -U $USER -d $DB < $problem > $result
     DIFF=$(diff -B $expected $result)
     if [ -z "$DIFF" ]; then
         echo pass

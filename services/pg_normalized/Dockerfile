@@ -1,6 +1,4 @@
-FROM postgis/postgis
-FROM postgres:14
-
+FROM postgis/postgis:14-3.3
 
 RUN apt-get update && apt-get install -y \
     less \
@@ -12,6 +10,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /tmp/db
 
 RUN mkdir /data && chown postgres /data
+
 
 # copy over the pagila database;
 # we rename the files so that they get executed in the correct order
